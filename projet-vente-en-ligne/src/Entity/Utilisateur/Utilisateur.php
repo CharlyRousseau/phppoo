@@ -7,13 +7,15 @@ use DateTime;
  * Class Utilisateur
  * Représente un utilisateur dans le système.
  */
-class Utilisateur
+abstract class Utilisateur
 {
-    private ?int $id = null;
-    private string $nom;
-    private string $email;
-    private string $motDePasse;
-    private DateTime $dateInscription;
+    protected ?int $id = null;
+    protected string $nom;
+    protected string $email;
+    protected string $motDePasse;
+    protected DateTime $dateInscription;
+    protected array $roles = [];
+    abstract function afficherRoles(): void;
 
     public function __construct(string $nom, string $email, string $motDePasse)
     {

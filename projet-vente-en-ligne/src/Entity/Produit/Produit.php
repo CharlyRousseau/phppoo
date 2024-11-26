@@ -4,13 +4,13 @@ namespace Entity;
  * Class Produit
  * Représente un produit
  */
-class Produit
+abstract class Produit
 {
-    private ?int $id = null;
-    private string $nom;
-    private string $description;
-    private float $prix;
-    private int $stock;
+    protected ?int $id = null;
+    protected string $nom;
+    protected string $description;
+    protected float $prix;
+    protected int $stock;
 
     public function __construct(
         string $nom,
@@ -23,6 +23,10 @@ class Produit
         $this->setPrix($prix);
         $this->setStock($stock);
     }
+
+    abstract protected function calculerFraisLivraison(): float;
+
+    abstract protected function afficherDetails(): void;
 
     public function getId(): ?int
     {
