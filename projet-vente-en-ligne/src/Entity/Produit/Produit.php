@@ -1,5 +1,6 @@
 <?php
-namespace Entity;
+namespace App\Entity\Produit;
+
 /**
  * Class Produit
  * Représente un produit

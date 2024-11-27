@@ -1,7 +1,7 @@
 <?php
-namespace Entity;
+namespace App\Entity\Produit;
 
-use Entity\Produit;
+use App\Entity\Produit\Produit;
 
 class ProduitPhysique extends Produit
 {
@@ -36,12 +36,12 @@ class ProduitPhysique extends Produit
 
     public function calculerFraisLivraison(): float
     {
-        return $this->calculerVolume() * 0.1;
+        return $this->calculerVolume() * 0.0001;
     }
 
     public function afficherDetails(): void
     {
-        echo "Poids : " . $this->getPoids() . " kg" . PHP_EOL;
+        echo "Poids : " . $this->getPoids() . " kg" . HTML_EOL;
     }
 
     public function getPoids(): float

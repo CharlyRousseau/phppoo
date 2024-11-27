@@ -1,7 +1,7 @@
 <?php
-namespace Entity;
+namespace App\Entity;
 
-use Entity\Produit;
+use App\Entity\Produit\Produit;
 
 class Categorie
 {

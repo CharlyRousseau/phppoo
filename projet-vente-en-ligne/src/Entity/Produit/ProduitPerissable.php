@@ -1,7 +1,6 @@
 <?php
-namespace Entity;
-
-use Entity\Produit;
+namespace App\Entity\Produit;
+use App\Entity\Produit\Produit;
 use DateTime;
 
 class ProduitPerissable extends Produit

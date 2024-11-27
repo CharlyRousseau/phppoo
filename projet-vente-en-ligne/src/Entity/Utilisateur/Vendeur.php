@@ -1,8 +1,8 @@
 <?php
-namespace Entity;
+namespace App\Entity\Utilisateur;
 
-use Entity\Utilisateur;
-use Entity\Produit;
+use App\Entity\Utilisateur\Utilisateur;
+use App\Entity\Produit\Produit;
 
 class Vendeur extends Utilisateur
 {

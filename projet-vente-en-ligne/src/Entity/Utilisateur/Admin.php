@@ -1,7 +1,7 @@
 <?php
-namespace Entity;
+namespace App\Entity\Utilisateur;
 
-use Entity\Utilisateur;
+use App\Entity\Utilisateur\Utilisateur;
 use DateTime;
 
 class Admin extends Utilisateur

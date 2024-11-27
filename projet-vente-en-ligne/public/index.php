@@ -2,24 +2,19 @@
 
 define("HTML_EOL", "<br>");
 
-require_once "../src/Entity/Produit/Produit.php";
-require_once "../src/Entity/Produit/ProduitPhysique.php";
-require_once "../src/Entity/Produit/ProduitNumerique.php";
-require_once "../src/Entity/Produit/ProduitPerissable.php";
-require_once "../src/Entity/Panier.php";
-require_once "../src/Entity/Utilisateur/Utilisateur.php";
-require_once "../src/Entity/Utilisateur/Client.php";
-require_once "../src/Entity/Utilisateur/Admin.php";
-require_once "../src/Entity/Utilisateur/Vendeur.php";
+require "../vendor/autoload.php";
 
-use Entity\ProduitPhysique;
-use Entity\ProduitNumerique;
-use Entity\ProduitPerissable;
-use Entity\Panier;
-use Entity\Client;
-use Entity\Admin;
-use Entity\Vendeur;
+echo "udi";
 
+use App\Entity\Produit\ProduitPhysique;
+use App\Entity\Produit\ProduitNumerique;
+use App\Entity\Produit\ProduitPerissable;
+use App\Entity\Panier;
+use App\Entity\Utilisateur\Client;
+use App\Entity\Utilisateur\Admin;
+use App\Entity\Utilisateur\Vendeur;
+use App\Factory\ProduitFactory;
+use App\Config\ConfigurationManager;
 /** --------------DAY 1--------------- */
 
 /**
@@ -141,3 +136,36 @@ echo "Vendeur : " . $vendeur->getNom() . HTML_EOL;
 echo HTML_EOL;
 
 echo "=== Fin des tests ===" . HTML_EOL;
+
+// Exemple de création de produit via la Factory
+$factory = new ProduitFactory();
+
+// Créer un produit physique
+$produitPhysique = $factory->creerProduit("physique", [
+    "nom" => "Table",
+    "description" => "Table en bois",
+    "prix" => 100,
+    "stock" => 20,
+    "poids" => 15.5,
+    "longueur" => 150,
+    "largeur" => 80,
+    "hauteur" => 75,
+]);
+
+// Créer un produit numérique
+$produitNumerique = $factory->creerProduit("numerique", [
+    "nom" => "Ebook PHP",
+    "description" => "Un guide complet sur PHP",
+    "prix" => 25,
+    "stock" => 100,
+    "fichier" => "ebook_php.pdf",
+]);
+
+echo $produitPhysique->getNom() . HTML_EOL;
+echo $produitNumerique->getNom() . HTML_EOL;
+echo $produitPerissable->getNom() . HTML_EOL;
+
+$configManager = ConfigurationManager::getInstance();
+echo $configManager->get("tva") . HTML_EOL; // Affiche 20
+$configManager->set("tva", 25); // Met à jour la TVA
+echo $configManager->get("tva") . HTML_EOL; // Affiche 20

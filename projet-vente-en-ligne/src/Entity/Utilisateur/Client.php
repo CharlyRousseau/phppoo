@@ -1,8 +1,8 @@
 <?php
-namespace Entity;
+namespace App\Entity\Utilisateur;
 
-use Entity\Utilisateur;
-use Entity\Panier;
+use App\Entity\Utilisateur\Utilisateur;
+use App\Entity\Panier;
 
 class Client extends Utilisateur
 {

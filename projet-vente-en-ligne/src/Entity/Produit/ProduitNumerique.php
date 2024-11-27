@@ -1,7 +1,7 @@
 <?php
-namespace Entity;
+namespace App\Entity\Produit;
 
-use Entity\Produit;
+use App\Entity\Produit\Produit;
 
 class ProduitNumerique extends Produit
 {

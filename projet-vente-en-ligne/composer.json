@@ -1,0 +1,9 @@
+{
+  "name": "root/projet-vente-en-ligne",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "require": {}
+}
