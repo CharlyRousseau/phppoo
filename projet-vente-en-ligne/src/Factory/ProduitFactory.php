@@ -1,6 +1,5 @@
 <?php
 namespace App\Factory;
-
 use App\Entity\Produit\Produit;
 use App\Entity\Produit\ProduitPhysique;
 use App\Entity\Produit\ProduitNumerique;
@@ -8,6 +7,9 @@ use App\Entity\Produit\ProduitPerissable;
 
 class ProduitFactory
 {
+    /**
+     * @param array<int,mixed> $data
+     */
     public function creerProduit(string $type, array $data): Produit
     {
         switch ($type) {
@@ -23,7 +25,9 @@ class ProduitFactory
                 );
         }
     }
-
+    /**
+     * @param array<int,mixed> $data
+     */
     private function creerProduitPhysique(array $data): ProduitPhysique
     {
         $this->validerProduitPhysique($data);
@@ -38,7 +42,9 @@ class ProduitFactory
             $data["hauteur"]
         );
     }
-
+    /**
+     * @param array<int,mixed> $data
+     */
     private function validerProduitPhysique(array $data): void
     {
         if (empty($data["nom"]) || !is_string($data["nom"])) {
@@ -59,7 +65,9 @@ class ProduitFactory
             );
         }
     }
-
+    /**
+     * @param array<int,mixed> $data
+     */
     private function creerProduitNumerique(array $data): ProduitNumerique
     {
         $this->validerProduitNumerique($data);
@@ -71,7 +79,9 @@ class ProduitFactory
             $data["fichier"]
         );
     }
-
+    /**
+     * @param array<int,mixed> $data
+     */
     private function validerProduitNumerique(array $data): void
     {
         if (empty($data["nom"]) || !is_string($data["nom"])) {
@@ -86,7 +96,9 @@ class ProduitFactory
         }
     }
 
-    // Création d'un produit périssable
+    /**
+     * @param array<int,mixed> $data
+     */
     private function creerProduitPerissable(array $data): ProduitPerissable
     {
         $this->validerProduitPerissable($data);
@@ -98,7 +110,9 @@ class ProduitFactory
             $data["dateExpiration"]
         );
     }
-
+    /**
+     * @param array<int,mixed> $data
+     */
     private function validerProduitPerissable(array $data): void
     {
         if (empty($data["nom"]) || !is_string($data["nom"])) {

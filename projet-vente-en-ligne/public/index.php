@@ -6,6 +6,8 @@ require "../vendor/autoload.php";
 
 echo "udi";
 
+use App\Database\DatabaseConnection;
+use App\Repository\ProduitRepository;
 use App\Entity\Produit\ProduitPhysique;
 use App\Entity\Produit\ProduitNumerique;
 use App\Entity\Produit\ProduitPerissable;
@@ -169,3 +171,18 @@ $configManager = ConfigurationManager::getInstance();
 echo $configManager->get("tva") . HTML_EOL; // Affiche 20
 $configManager->set("tva", 25); // Met à jour la TVA
 echo $configManager->get("tva") . HTML_EOL; // Affiche 20
+
+// Créer un produit
+$produitRepo = new ProduitRepository();
+
+$productId = $produitRepo->create($produitPhysique);
+
+// Lire un produit
+$produitRecupere = $produitRepo->read($productId);
+
+// Mettre à jour un produit
+$produitRecupere->setStock(45);
+$produitRepo->update($produitRecupere);
+
+// Supprimer un produit
+$produitRepo->delete($productId);
