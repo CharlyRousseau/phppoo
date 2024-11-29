@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Entity\Produit\Produit;
@@ -13,6 +14,12 @@ class Categorie
      * @var Produit[]
      */
     private array $produits = [];
+
+    public function __construct(string $nom, string $description)
+    {
+        $this->setNom($nom);
+        $this->setDescription($description);
+    }
 
     public function getId(): int
     {
@@ -58,8 +65,6 @@ class Categorie
     }
 
     /**
-     * Renvoie le tableau de produit
-     *
      * @return Produit[]
      */
     public function listerProduits(): array

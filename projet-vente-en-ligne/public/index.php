@@ -4,185 +4,338 @@ define("HTML_EOL", "<br>");
 
 require "../vendor/autoload.php";
 
-echo "udi";
-
-use App\Database\DatabaseConnection;
-use App\Repository\ProduitRepository;
+use App\Entity\Categorie;
 use App\Entity\Produit\ProduitPhysique;
 use App\Entity\Produit\ProduitNumerique;
 use App\Entity\Produit\ProduitPerissable;
-use App\Entity\Panier;
 use App\Entity\Utilisateur\Client;
-use App\Entity\Utilisateur\Admin;
-use App\Entity\Utilisateur\Vendeur;
-use App\Factory\ProduitFactory;
-use App\Config\ConfigurationManager;
-/** --------------DAY 1--------------- */
+use App\Repository\UtilisateurRepository;
+use App\Repository\ProduitRepository;
+use App\Repository\CategorieRepository;
 
-/**
-$produit = new Produit("Téléphone", "Un super téléphone", 500, 10);
-echo "Prix TTC : " . $produit->calculerPrixTTC() . HTML_EOL;
-echo "Stock suffisant ? " .
-    ($produit->verifierStock(5) ? "Oui" : "Non") .
-    HTML_EOL;
+$utilisateurRepo = new UtilisateurRepository();
 
-$utilisateur = new Utilisateur("Charly", "charly@example.com", "securePass123");
-echo "Email : " . $utilisateur->getEmail() . HTML_EOL;
-echo "Mot de passe valide ? " .
-    ($utilisateur->verifierMotDePasse("securePass123") ? "Oui" : "Non") .
-    HTML_EOL;
-*/
+// -------------------- Création --------------------
+echo "=== Création d'un utilisateur ===" . HTML_EOL;
 
-/** --------------DAY 2--------------- */
-
-// -------------------- Tests Produits --------------------
-echo "=== Tests Produits === ©" . HTML_EOL;
-
-// Produit Physique
-$produitPhysique = new ProduitPhysique(
-    "Table",
-    "Une belle table",
-    9,
-    150,
-    10,
-    120,
-    60,
-    75
+$nouvelUtilisateur = new Client(
+    "John Doe",
+    "john.doe@example.com",
+    "adresse",
+    "password123Z2"
 );
-echo "Produit Physique : " . $produitPhysique->getNom() . HTML_EOL;
-echo "Volume : " . $produitPhysique->calculerVolume() . " cm3" . HTML_EOL;
-echo "Frais Livraison : " .
-    $produitPhysique->calculerFraisLivraison() .
-    " €" .
-    HTML_EOL;
+$userId = $utilisateurRepo->create($nouvelUtilisateur);
 
-// Produit Numérique
-$produitNumerique = new ProduitNumerique(
-    "E-book",
-    "Un livre numérique",
-    10,
-    2,
-    "PDF"
-);
+echo "Utilisateur créé avec l'ID : " . $userId . HTML_EOL;
 
-echo "Produit Numérique : " . $produitNumerique->getNom() . HTML_EOL;
-echo "Lien Téléchargement : " .
-    $produitNumerique->genererLienTelechargement() .
-    HTML_EOL;
-echo "Frais Livraison : " .
-    $produitNumerique->calculerFraisLivraison() .
-    " €" .
-    HTML_EOL;
+// -------------------- Lecture --------------------
+echo "=== Lecture d'un utilisateur ===" . HTML_EOL;
 
-// Produit Périssable
-$produitPerissable = new ProduitPerissable(
-    "Lait",
-    "Lait frais",
-    2.5,
-    50,
-    new DateTime("2024-12-01"),
-    4.0
-);
-echo "Produit Périssable : " . $produitPerissable->getNom() . HTML_EOL;
-echo "Est Périmé ? " .
-    ($produitPerissable->estPerime() ? "Oui" : "Non") .
-    HTML_EOL;
-echo "Frais Livraison : " .
-    $produitPerissable->calculerFraisLivraison() .
-    " €" .
-    HTML_EOL;
+$utilisateur = $utilisateurRepo->read($userId);
+if ($utilisateur) {
+    echo "Nom : " . $utilisateur->getNom() . HTML_EOL;
+    echo "Email : " . $utilisateur->getEmail() . HTML_EOL;
+} else {
+    echo "Utilisateur non trouvé." . HTML_EOL;
+}
 
-echo HTML_EOL;
+// -------------------- Mise à jour --------------------
+echo "=== Mise à jour d'un utilisateur ===" . HTML_EOL;
 
-// -------------------- Tests Panier --------------------
-echo "=== Tests Panier ===" . HTML_EOL;
+$utilisateur->setNom("John Updated");
+$utilisateur->setEmail("updated.john@example.com");
+$utilisateur->setMotDePasse("newPassword123");
+$utilisateurRepo->update($utilisateur);
 
-$panier = new Panier();
-$panier->ajouterArticle($produitPhysique, 2);
-$panier->ajouterArticle($produitNumerique, 1);
+echo "Utilisateur mis à jour." . HTML_EOL;
 
-echo "Total Panier : " . $panier->calculerTotal() . " €" . HTML_EOL;
-echo "Nombre d'articles : " . $panier->compterArticles() . HTML_EOL;
+$utilisateurMisAJour = $utilisateurRepo->read($userId);
+echo "Nom après mise à jour : " . $utilisateurMisAJour->getNom() . HTML_EOL;
+echo "Email après mise à jour : " . $utilisateurMisAJour->getEmail() . HTML_EOL;
 
-$panier->retirerArticle($produitPhysique, 1);
-echo "Nombre d'articles après retrait : " .
-    $panier->compterArticles() .
-    HTML_EOL;
+// -------------------- Recherche par critères --------------------
+echo "=== Recherche par critères ===" . HTML_EOL;
 
-echo HTML_EOL;
+$criteria = ["email" => "updated.john@example.com"];
+$utilisateurs = $utilisateurRepo->findBy($criteria);
 
-// -------------------- Tests Utilisateurs --------------------
-echo "=== Tests Utilisateurs ===" . HTML_EOL;
+foreach ($utilisateurs as $u) {
+    echo "Utilisateur trouvé : " .
+        $u->getNom() .
+        " (" .
+        $u->getEmail() .
+        ")" .
+        HTML_EOL;
+}
 
-// Client
-$client = new Client(
-    "Alice",
-    "alice@example.com",
-    "password123",
-    "123 Rue Exemple",
-    $panier
-);
-echo "Client : " . $client->getNom() . HTML_EOL;
-echo "Adresse de livraison : " . $client->getAdresseLivraison() . HTML_EOL;
+// -------------------- Lecture de tous les utilisateurs --------------------
+echo "=== Lecture de tous les utilisateurs ===" . HTML_EOL;
 
-// Admin
-$admin = new Admin("Bob", "bob@example.com", "adminPass", 5);
-echo "Admin : " . $admin->getNom() . HTML_EOL;
-echo "Niveau d'accès : " . $admin->getNiveauAcces() . HTML_EOL;
+$tousUtilisateurs = $utilisateurRepo->findAll();
 
-// Vendeur
-$vendeur = new Vendeur("Charly", "charly@example.com", "vendeurPass", 10.0);
-$vendeur->ajouterProduit($produitPhysique);
-echo "Vendeur : " . $vendeur->getNom() . HTML_EOL;
+foreach ($tousUtilisateurs as $u) {
+    echo "Utilisateur : " .
+        $u->getNom() .
+        " (" .
+        $u->getEmail() .
+        ")" .
+        HTML_EOL;
+}
 
-echo HTML_EOL;
+// -------------------- Suppression --------------------
+echo "=== Suppression d'un utilisateur ===" . HTML_EOL;
+
+$utilisateurRepo->delete($userId);
+echo "Utilisateur avec l'ID $userId supprimé." . HTML_EOL;
+
+// Vérification de la suppression
+$utilisateurSupprime = $utilisateurRepo->read($userId);
+if (!$utilisateurSupprime) {
+    echo "L'utilisateur a bien été supprimé." . HTML_EOL;
+}
 
 echo "=== Fin des tests ===" . HTML_EOL;
 
-// Exemple de création de produit via la Factory
-$factory = new ProduitFactory();
+$categorieRepo = new CategorieRepository();
 
-// Créer un produit physique
-$produitPhysique = $factory->creerProduit("physique", [
-    "nom" => "Table",
-    "description" => "Table en bois",
-    "prix" => 100,
-    "stock" => 20,
-    "poids" => 15.5,
-    "longueur" => 150,
-    "largeur" => 80,
-    "hauteur" => 75,
-]);
+// -------------------- Création --------------------
+echo "=== Création d'une catégorie ===" . PHP_EOL;
 
-// Créer un produit numérique
-$produitNumerique = $factory->creerProduit("numerique", [
-    "nom" => "Ebook PHP",
-    "description" => "Un guide complet sur PHP",
-    "prix" => 25,
-    "stock" => 100,
-    "fichier" => "ebook_php.pdf",
-]);
+$nouvelleCategorie = new Categorie(
+    "Catégorie 1",
+    "Description de la catégorie 1"
+);
 
-echo $produitPhysique->getNom() . HTML_EOL;
-echo $produitNumerique->getNom() . HTML_EOL;
-echo $produitPerissable->getNom() . HTML_EOL;
+$categorieId = $categorieRepo->create($nouvelleCategorie);
 
-$configManager = ConfigurationManager::getInstance();
-echo $configManager->get("tva") . HTML_EOL; // Affiche 20
-$configManager->set("tva", 25); // Met à jour la TVA
-echo $configManager->get("tva") . HTML_EOL; // Affiche 20
+echo "Catégorie créée avec l'ID : " . $categorieId . PHP_EOL;
 
-// Créer un produit
+// -------------------- Lecture --------------------
+echo "=== Lecture d'une catégorie ===" . PHP_EOL;
+
+$categorie = $categorieRepo->read($categorieId);
+
+if ($categorie) {
+    echo "Nom : " . $categorie->getNom() . PHP_EOL;
+    echo "Description : " . $categorie->getDescription() . PHP_EOL;
+} else {
+    echo "Catégorie non trouvée." . PHP_EOL;
+}
+
+// -------------------- Mise à jour --------------------
+echo "=== Mise à jour d'une catégorie ===" . PHP_EOL;
+
+$categorie->setNom("Catégorie 1 Mise à Jour");
+$categorie->setDescription("Description mise à jour de la catégorie 1");
+$categorieRepo->update($categorie);
+
+echo "Catégorie mise à jour." . PHP_EOL;
+
+$categorieMiseAJour = $categorieRepo->read($categorieId);
+echo "Nom après mise à jour : " . $categorieMiseAJour->getNom() . PHP_EOL;
+echo "Description après mise à jour : " .
+    $categorieMiseAJour->getDescription() .
+    PHP_EOL;
+
+// -------------------- Recherche par critères --------------------
+echo "=== Recherche par critères ===" . PHP_EOL;
+
+$criteria = ["nom" => "Catégorie 1 Mise à Jour"];
+$categories = $categorieRepo->findBy($criteria);
+
+foreach ($categories as $cat) {
+    echo "Catégorie trouvée : " .
+        $cat->getNom() .
+        " (" .
+        $cat->getDescription() .
+        ")" .
+        PHP_EOL;
+}
+
+// -------------------- Lecture de toutes les catégories --------------------
+echo "=== Lecture de toutes les catégories ===" . PHP_EOL;
+
+$toutesCategories = $categorieRepo->findAll();
+
+foreach ($toutesCategories as $cat) {
+    echo "Catégorie : " .
+        $cat->getNom() .
+        " (" .
+        $cat->getDescription() .
+        ")" .
+        PHP_EOL;
+}
+
+// -------------------- Suppression --------------------
+echo "=== Suppression d'une catégorie ===" . PHP_EOL;
+
+$categorieRepo->delete($categorieId);
+echo "Catégorie avec l'ID $categorieId supprimée." . PHP_EOL;
+
+// Vérification de la suppression
+$categorieSupprimee = $categorieRepo->read($categorieId);
+if (!$categorieSupprimee) {
+    echo "La catégorie a bien été supprimée." . PHP_EOL;
+}
+
+echo "=== Fin des tests ===" . PHP_EOL;
+
 $produitRepo = new ProduitRepository();
 
-$productId = $produitRepo->create($produitPhysique);
+// -------------------- Création --------------------
+echo "=== Création d'un produit physique ===" . HTML_EOL;
 
-// Lire un produit
-$produitRecupere = $produitRepo->read($productId);
+$produitPhysique = new ProduitPhysique(
+    "Produit Physique 1",
+    "Produit Physique Description",
+    29.99, //prix
+    2, //stock
+    500, // poids
+    10, // longueur
+    5, // largeur
+    20 // hauteur
+);
+$produitId = $produitRepo->create($produitPhysique);
 
-// Mettre à jour un produit
-$produitRecupere->setStock(45);
-$produitRepo->update($produitRecupere);
+echo "Produit créé avec l'ID : " . $produitId . HTML_EOL;
 
-// Supprimer un produit
-$produitRepo->delete($productId);
+// -------------------- Lecture --------------------
+echo "=== Lecture d'un produit ===" . HTML_EOL;
+
+$produit = $produitRepo->read($produitId);
+if ($produit) {
+    echo "Nom : " . $produit->getNom() . HTML_EOL;
+    echo "Prix : " . $produit->getPrix() . HTML_EOL;
+    echo "Description : " . $produit->getDescription() . HTML_EOL;
+} else {
+    echo "Produit non trouvé." . HTML_EOL;
+}
+
+// -------------------- Mise à jour --------------------
+echo "=== Mise à jour d'un produit ===" . HTML_EOL;
+
+$produit->setNom("Produit Physique 1 Mis à Jour");
+$produit->setPrix(39.99);
+$produit->setDescription("Produit Physique Description Mise à Jour");
+$produitRepo->update($produit);
+
+echo "Produit mis à jour." . HTML_EOL;
+
+$produitMisAJour = $produitRepo->read($produitId);
+echo "Nom après mise à jour : " . $produitMisAJour->getNom() . HTML_EOL;
+echo "Prix après mise à jour : " . $produitMisAJour->getPrix() . HTML_EOL;
+echo "Description après mise à jour : " .
+    $produitMisAJour->getDescription() .
+    HTML_EOL;
+
+// -------------------- Recherche par critères --------------------
+echo "=== Recherche par critères ===" . HTML_EOL;
+
+$criteria = ["nom" => "Produit Physique 1 Mis à Jour"];
+$produits = $produitRepo->findBy($criteria);
+
+foreach ($produits as $p) {
+    echo "Produit trouvé : " .
+        $p->getNom() .
+        " (" .
+        $p->getPrix() .
+        ")" .
+        HTML_EOL;
+}
+
+// -------------------- Lecture de tous les produits --------------------
+echo "=== Lecture de tous les produits ===" . HTML_EOL;
+
+$tousProduits = $produitRepo->findAll();
+
+foreach ($tousProduits as $p) {
+    echo "Produit : " . $p->getNom() . " (" . $p->getPrix() . ")" . HTML_EOL;
+}
+
+// -------------------- Suppression --------------------
+echo "=== Suppression d'un produit ===" . HTML_EOL;
+
+$produitRepo->delete($produitId);
+echo "Produit avec l'ID $produitId supprimé." . HTML_EOL;
+
+// Vérification de la suppression
+$produitSupprime = $produitRepo->read($produitId);
+if (!$produitSupprime) {
+    echo "Le produit a bien été supprimé." . HTML_EOL;
+}
+
+echo "=== Fin des tests ===" . HTML_EOL;
+
+// -------------------- Création d'un produit numérique --------------------
+echo "=== Création d'un produit numérique ===" . HTML_EOL;
+
+$produitNumerique = new ProduitNumerique(
+    "Produit Numérique 1",
+    "Produit Numérique Description",
+    1500,
+    19.99,
+    "application/zip" // formatFichier
+);
+$produitId = $produitRepo->create($produitNumerique);
+
+echo "Produit numérique créé avec l'ID : " . $produitId . HTML_EOL;
+
+// -------------------- Lecture d'un produit numérique --------------------
+echo "=== Lecture d'un produit numérique ===" . HTML_EOL;
+
+$produit = $produitRepo->read($produitId);
+if ($produit) {
+    echo "Nom : " . $produit->getNom() . HTML_EOL;
+    echo "Prix : " . $produit->getPrix() . HTML_EOL;
+    echo "Description : " . $produit->getDescription() . HTML_EOL;
+
+    if ($produit instanceof ProduitNumerique) {
+        echo "Lien de téléchargement : " .
+            $produit->getLienTelechargement() .
+            PHP_EOL;
+    } else {
+        echo "Ce produit n'est pas numérique." . HTML_EOL;
+    }
+} else {
+    echo "Produit non trouvé." . HTML_EOL;
+}
+
+// -------------------- Création d'un produit périssable --------------------
+echo "=== Création d'un produit périssable ===" . HTML_EOL;
+
+$produitPerissable = new ProduitPerissable(
+    "Produit Périssable 1",
+    "Produit Périssable Description",
+    9.99,
+    3,
+    new DateTime("2025-12-31"),
+    4
+);
+$produitId = $produitRepo->create($produitPerissable);
+
+echo "Produit périssable créé avec l'ID : " . $produitId . HTML_EOL;
+
+// -------------------- Lecture d'un produit périssable --------------------
+echo "=== Lecture d'un produit périssable ===" . HTML_EOL;
+
+$produit = $produitRepo->read($produitId);
+
+if ($produit) {
+    echo "Nom : " . $produit->getNom() . PHP_EOL;
+    echo "Prix : " . $produit->getPrix() . PHP_EOL;
+    echo "Description : " . $produit->getDescription() . PHP_EOL;
+
+    if ($produit instanceof ProduitPerissable) {
+        echo "Date d'expiration : " . $produit->getDateExpiration() . PHP_EOL;
+        echo "Température de stockage : " .
+            $produit->getTemperatureStockage() .
+            PHP_EOL;
+    } else {
+        echo "Ce produit n'est pas périssable." . PHP_EOL;
+    }
+} else {
+    echo "Produit non trouvé." . PHP_EOL;
+}
+
+echo "=== Fin des tests ===" . HTML_EOL;
+?>

@@ -8,11 +8,15 @@ class DatabaseConnection
 {
     private static ?DatabaseConnection $instance = null;
     private ?PDO $connection = null;
+
     private string $host;
     private string $db;
     private string $user;
     private string $password;
 
+    /**
+     * Constructeur privé pour empêcher l'instanciation directe de la classe.
+     */
     private function __construct()
     {
         $this->host = "db";
@@ -23,7 +27,9 @@ class DatabaseConnection
         $this->connect();
     }
 
-    // Retourne l'instance unique de la classe
+    /**
+     * @return DatabaseConnection L'instance unique de DatabaseConnection.
+     */
     public static function getInstance(): DatabaseConnection
     {
         if (self::$instance === null) {
@@ -32,6 +38,9 @@ class DatabaseConnection
         return self::$instance;
     }
 
+    /**
+     * @throws RuntimeException Si la connexion échoue, une exception est levée avec un message d'erreur.
+     */
     private function connect(): void
     {
         try {
@@ -48,15 +57,21 @@ class DatabaseConnection
         }
     }
 
+    /**
+     * @return PDO L'objet PDO représentant la connexion à la base de données.
+     */
     public function getConnection(): PDO
     {
         return $this->connection;
     }
 
-    private function __clone()
+    private function __clone(): void
     {
     }
 
+    /**
+     * @return void
+     */
     public function __destruct()
     {
         $this->connection = null;

@@ -8,14 +8,13 @@ class Client extends Utilisateur
 {
     private string $adresseLivraison;
     private Panier $panier;
-
     public function __construct(
         string $nom,
-        string $prenom,
         string $email,
-        string $adresseLivraison
+        string $adresseLivraison,
+        ?string $motDePasse = null
     ) {
-        parent::__construct($nom, $prenom, $email);
+        parent::__construct($nom, $email, $motDePasse);
         $this->setAdresseLivraison($adresseLivraison);
         $this->panier = new Panier();
     }
@@ -40,6 +39,11 @@ class Client extends Utilisateur
         return $this->adresseLivraison;
     }
 
+    /**
+     * @param string $adresseLivraison L'adresse de livraison à définir.
+     *
+     * @return self Retourne l'instance du client pour une chaîne d'appels.
+     */
     public function setAdresseLivraison(string $adresseLivraison): self
     {
         $this->adresseLivraison = $adresseLivraison;

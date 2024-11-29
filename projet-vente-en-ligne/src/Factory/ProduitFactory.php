@@ -1,16 +1,22 @@
 <?php
 namespace App\Factory;
+
 use App\Entity\Produit\Produit;
 use App\Entity\Produit\ProduitPhysique;
 use App\Entity\Produit\ProduitNumerique;
 use App\Entity\Produit\ProduitPerissable;
-
+use DateTime;
 class ProduitFactory
 {
     /**
-     * @param array<int,mixed> $data
+     * @param string $type Le type de produit à créer. Peut être "physique", "numerique" ou "perissable".
+     * @param array<int,mixed> $data Les données nécessaires à la création du produit.
+     *
+     * @return Produit Le produit créé.
+     *
+     * @throws \InvalidArgumentException Si le type de produit est inconnu.
      */
-    public function creerProduit(string $type, array $data): Produit
+    public function creerProduit(string $type, array $data): mixed
     {
         switch ($type) {
             case "physique":
@@ -25,8 +31,14 @@ class ProduitFactory
                 );
         }
     }
+
     /**
-     * @param array<int,mixed> $data
+     *
+     * @param array<int,mixed> $data Les données nécessaires pour créer le produit physique.
+     *
+     * @return ProduitPhysique Le produit physique créé.
+     *
+     * @throws \InvalidArgumentException Si les données sont invalides.
      */
     private function creerProduitPhysique(array $data): ProduitPhysique
     {
@@ -42,8 +54,12 @@ class ProduitFactory
             $data["hauteur"]
         );
     }
+
     /**
-     * @param array<int,mixed> $data
+     *
+     * @param array<int,mixed> $data Les données à valider pour le produit physique.
+     *
+     * @throws \InvalidArgumentException Si les données sont invalides (nom manquant ou dimensions manquantes).
      */
     private function validerProduitPhysique(array $data): void
     {
@@ -65,8 +81,14 @@ class ProduitFactory
             );
         }
     }
+
     /**
-     * @param array<int,mixed> $data
+     *
+     * @param array<int,mixed> $data Les données nécessaires pour créer le produit numérique.
+     *
+     * @return ProduitNumerique Le produit numérique créé.
+     *
+     * @throws \InvalidArgumentException Si les données sont invalides.
      */
     private function creerProduitNumerique(array $data): ProduitNumerique
     {
@@ -76,11 +98,15 @@ class ProduitFactory
             $data["description"],
             $data["prix"],
             $data["stock"],
-            $data["fichier"]
+            $data["formatFichier"]
         );
     }
+
     /**
-     * @param array<int,mixed> $data
+     *
+     * @param array<int,mixed> $data Les données à valider pour le produit numérique.
+     *
+     * @throws \InvalidArgumentException Si les données sont invalides (nom manquant ou fichier manquant).
      */
     private function validerProduitNumerique(array $data): void
     {
@@ -89,7 +115,10 @@ class ProduitFactory
                 "Le nom est requis et doit être une chaîne."
             );
         }
-        if (empty($data["fichier"]) || !is_string($data["fichier"])) {
+        if (
+            empty($data["formatFichier"]) ||
+            !is_string($data["formatFichier"])
+        ) {
             throw new \InvalidArgumentException(
                 "Le fichier numérique est requis."
             );
@@ -97,7 +126,12 @@ class ProduitFactory
     }
 
     /**
-     * @param array<int,mixed> $data
+     *
+     * @param array<int,mixed> $data Les données nécessaires pour créer le produit périssable.
+     *
+     * @return ProduitPerissable Le produit périssable créé.
+     *
+     * @throws \InvalidArgumentException Si les données sont invalides.
      */
     private function creerProduitPerissable(array $data): ProduitPerissable
     {
@@ -107,11 +141,16 @@ class ProduitFactory
             $data["description"],
             $data["prix"],
             $data["stock"],
-            $data["dateExpiration"]
+            new DateTime($data["dateExpiration"]),
+            $data["temperatureStockage"]
         );
     }
+
     /**
-     * @param array<int,mixed> $data
+     *
+     * @param array<int,mixed> $data Les données à valider pour le produit périssable.
+     *
+     * @throws \InvalidArgumentException Si les données sont invalides (nom manquant ou date d'expiration invalide).
      */
     private function validerProduitPerissable(array $data): void
     {
